@@ -5,7 +5,8 @@
     "main": "index.js",
     "license": "MIT",
     "dependencies": {
-        "@duckdb/duckdb-wasm": "file:../../packages/duckdb-wasm"
+        "@duckdb/duckdb-wasm": "file:../../packages/duckdb-wasm",
+        "uglify-js": "^3.17.4"
     },
     "devDependencies": {
         "http-server": "^14.1.1"

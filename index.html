@@ -5,6 +5,8 @@
 <meta http-equiv="origin-trial" content=
 "AhzE0s16JvgPdPAAu9CzLGB8w9CFBa5Z2325jtBs4nzxYumZotwR2bDH0HJE+TXjE4As7Ga8GWi0lufkaxL/UQ0AAABoeyJvcmlnaW4iOiJodHRwczovL2NhcmxvcGkuZ2l0aHViLmlvOjQ0MyIsImZlYXR1cmUiOiJVbnJlc3RyaWN0ZWRTaGFyZWRBcnJheUJ1ZmZlciIsImV4cGlyeSI6MTY4ODA4MzE5OX0="
 />
+
+  <script src="https://cdn.jsdelivr.net/npm/apache-arrow/Arrow.es2015.min.js"></script>
 </head>
     <body>
         <script type="module">
@@ -33,9 +35,20 @@
                     const db = new duckdb.AsyncDuckDB(logger, worker);
                     await db.instantiate(DUCKDB_CONFIG.mainModule, DUCKDB_CONFIG.pthreadWorker);
 
-                    const conn = await db.connect();
-                    await conn.query(`SELECT count(*)::INTEGER as v FROM generate_series(0, 100) t(v)`);
+console.log(db);
 
+                    const conn = await db.connect();
+var T = performance.now();
+        await conn.query('CREATE TABLE integers AS SELECT ((i * 9582398353) % 100)::INTEGER AS i, ((i * 847892347987) % 100)::INTEGER AS j FROM range(0, 1000000) tbl(i);', function(err, res) {
+        console.log("asdas",err, res);
+}
+);
+
+
+
+ //                   await conn.query(`SELECT count(*)::INTEGER as v FROM generate_series(0, 1000000) t(v)`);
+var T2 = performance.now();
+console.log(T2-T);
                     await conn.close();
                     await db.terminate();
                     await worker.terminate();
