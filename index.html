@@ -11,10 +11,11 @@
     <body>
         <script type="module">
             import * as duckdb from './duckdb-browser.mjs';
+addEventListener('message',(x)=>(console.log('main', x)));
 
             (async () => {
                 try {
-                    const DUCKDB_CONFIG = await duckdb.selectBundle({
+                    var DUCKDB_CONFIG = await duckdb.selectBundle({
                         mvp: {
                             mainModule: './duckdb.wasm',
                             mainWorker: './duckdb-browser.worker.js',
@@ -29,7 +30,9 @@
                             pthreadWorker: './duckdb-browser-coi.pthread.worker.js',
                         },
                     });
+console.log(DUCKDB_CONFIG);
 
+//DUCKDB_CONFIG.maximumThreads = 9;
                     const logger = new duckdb.ConsoleLogger();
                     const worker = new Worker(DUCKDB_CONFIG.mainWorker);
                     const db = new duckdb.AsyncDuckDB(logger, worker);
@@ -38,20 +41,35 @@
 console.log(db);
 
                     const conn = await db.connect();
+{
 var T = performance.now();
-        await conn.query('CREATE TABLE integers AS SELECT ((i * 9582398353) % 100)::INTEGER AS i, ((i * 847892347987) % 100)::INTEGER AS j FROM range(0, 1000000) tbl(i);', function(err, res) {
+        //await conn.query('CREATE TABLE integers AS SELECT ((i * 9582398353) % 100)::INTEGER AS i, ((i * 847892347987) % 100)::INTEGER AS j FROM range(0, 10000000) tbl(i);', function(err, res) {
+        await conn.query('CREATE TABLE integers AS SELECT ((i * 9582398353) % 1012342)::INTEGER AS i FROM range(0, 10000000) tbl(i);', function(err, res) {
+        console.log("asdas",err, res);
+}
+);
+var T2 = performance.now();
+console.log(T2-T);
+}
+for (var i = 0; i<100; i++)
+{
+var T = performance.now();
+        await conn.query(
+//'SELECT SUM(i) FROM integers'
+'CREATE TABLE intesgers AS SELECT ((i * 95853) % 10000)::INTEGER AS i, ((i * 8477987) % 901)::INTEGER AS j FROM range(0, 10000000) tbl(i);'
+, function(err, res) {
         console.log("asdas",err, res);
 }
 );
 
+        await conn.query('DROP TABLE intesgers;', function(err, res) {console.log("asdas",err, res);});
 
-
- //                   await conn.query(`SELECT count(*)::INTEGER as v FROM generate_series(0, 1000000) t(v)`);
 var T2 = performance.now();
 console.log(T2-T);
-                    await conn.close();
-                    await db.terminate();
-                    await worker.terminate();
+}
+           //         await conn.close();
+          //          await db.terminate();
+        //            await worker.terminate();
                 } catch (e) {
                     console.error(e);
                 }
